@@ -115,6 +115,6 @@ for apiKeyName, apiKeyVal in keys_dict.iteritems():
         plaintext = ''.join(buffer)
 
     #print response
-    sys.stdout.write('device='+apiKeyName+' '+plaintext[30:].replace(':','=').replace('}','').replace('{','').replace(',',' ')+'\n')
+    sys.stdout.write('device='+apiKeyName+' '+plaintext[30:].replace(':','=').replace('}','').replace('{','').replace(',',' ').replace('\"','')+'\n')
     #Close the socket
     s.close()
