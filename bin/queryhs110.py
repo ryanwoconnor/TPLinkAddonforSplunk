@@ -1,7 +1,10 @@
 import unicodedata
+import splunk.clilib.cli_common
+import splunk.rest
 import socket   #for sockets
 import sys  #for exit
 import struct
+import json
 import time
 import StringIO
 
@@ -40,15 +43,7 @@ def recv_timeout(the_socket,timeout=2):
     #join all parts to make final string
     return ''.join(total_data)
 
-#create an INET, STREAMing socket
-try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-except socket.error:
-    print 'Failed to create socket'
-    sys.exit()
-
-print 'Socket Created'
-
+sessionKey = sys.stdin.readline().strip()
 
 keys_dict = {}
 
@@ -77,18 +72,20 @@ except Exception, e:
     raise Exception("Could not GET credentials: %s" % (str(e)))
 
 for apiKeyName, apiKeyVal in keys_dict.iteritems():
+    sys.stderr.write('Trying IP:'+apiKeyVal)
+    #create an INET, STREAMing socket
     try:
-        remote_ip = socket.gethostbyname( apiKeyVal )
-    except socket.gaierror:
-        #could not resolve
-        print 'Hostname could not be resolved. Exiting'
+         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    except socket.error:
+        sys.stderr.write('Failed to create socket')
         sys.exit()
-    
-for apiKeyName, apiKeyVal in keys_dict.iteritems(): 
+
+    sys.stderr.write("Socket Created")
+    sys.stderr.write("\n")
+
     #Connect to remote server
-    s.connect((remote_ip , port))
+    s.connect((apiKeyVal , 9999))
  
-    print 'Socket Connected to ' + host + ' on ip ' + remote_ip
  
     #Send some data to remote server
     message = "AAAAJNDw0rfav8uu3P7Ev5+92r/LlOaD4o76k/6buYPtmPSYuMXlmA==".decode('base64')
@@ -98,10 +95,9 @@ for apiKeyName, apiKeyVal in keys_dict.iteritems():
         s.sendall(message)
     except socket.error:
         #Send failed
-        print 'Send failed'
+        sys.stderr.write('Send to IP '+apiKeyValue+' failed')
         sys.exit()
  
-    print 'Message sent successfully'
  
     #get reply and print
     ciphertext = recv_timeout(s)
@@ -119,6 +115,6 @@ for apiKeyName, apiKeyVal in keys_dict.iteritems():
         plaintext = ''.join(buffer)
 
     #print response
-    print plaintext[5:]
-#Close the socket
-s.close()
+    sys.stdout.write('device='+apiKeyName+' '+plaintext[30:].replace(':','=').replace('}','').replace('{','').replace(',',' '))
+    #Close the socket
+    s.close()
