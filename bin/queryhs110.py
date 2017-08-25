@@ -5,6 +5,9 @@ import struct
 import time
 import StringIO
 
+host = '192.168.1.225';
+port = 9999;
+
 
 #create an INET, STREAMing socket
 try:
@@ -15,12 +18,10 @@ except socket.error:
      
 print 'Socket Created'
  
-host = '192.168.1.225';
-port = 9999;
+
  
 try:
     remote_ip = socket.gethostbyname( host )
- 
 except socket.gaierror:
     #could not resolve
     print 'Hostname could not be resolved. Exiting'

@@ -1,0 +1,13 @@
+<dashboard script="index.js"
+           stylesheet="configure.css"
+           hideAppBar="true"
+           isDashboard="false"
+           hideEdit="true">
+  <row>
+    <panel id="tplinkConfig">
+      <html>
+        <div class="container" id="tplinkConfigWrapper"/>
+      </html>
+    </panel>
+  </row>
+</dashboard>
